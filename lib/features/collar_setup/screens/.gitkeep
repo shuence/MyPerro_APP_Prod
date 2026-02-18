@@ -1,0 +1,8 @@
+# Collar Setup Screens
+# Files to be added in Phase 4-5:
+# - qr_scan_collar_screen.dart
+# - collar_pairing_screen.dart
+# - collar_registration_screen.dart
+# - geofence_setup_screen.dart
+# - gps_test_screen.dart
+# - setup_complete_screen.dart
