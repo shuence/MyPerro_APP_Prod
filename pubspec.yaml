@@ -61,6 +61,9 @@ dev_dependencies:
   freezed: ^2.4.0
   json_serializable: ^6.7.0
 
+  # Launcher Icon
+  flutter_launcher_icons: ^0.13.1
+
 flutter:
   uses-material-design: true
   assets:
@@ -72,3 +75,9 @@ flutter:
     - assets/illustrations/
     - assets/designs/
     - assets/roles/
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/uploaddog.png"
+  min_sdk_android: 21

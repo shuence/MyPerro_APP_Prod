@@ -46,14 +46,22 @@ class _LogInScreenState extends State<LogInScreen> {
   @override
   void initState() {
     super.initState();
+    _initializeRive();
+    _loginIdCtl.addListener(() {
+      _numLook?.change(_loginIdCtl.text.length.toDouble());
+    });
+  }
 
-    // Rive setup
-    _animationURL = (defaultTargetPlatform == TargetPlatform.android ||
-        defaultTargetPlatform == TargetPlatform.iOS)
-        ? 'assets/animations/login.riv'
-        : 'animations/login.riv';
+  Future<void> _initializeRive() async {
+    try {
+      await RiveFile.initialize();
 
-    rootBundle.load(_animationURL).then((data) {
+      _animationURL = (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS)
+          ? 'assets/animations/login.riv'
+          : 'animations/login.riv';
+
+      final data = await rootBundle.load(_animationURL);
       final file = RiveFile.import(data);
       final art = file.mainArtboard;
       _ctrl = StateMachineController.fromArtboard(art, 'Login Machine');
@@ -79,11 +87,14 @@ class _LogInScreenState extends State<LogInScreen> {
           }
         }
       }
-      setState(() => _riveArtboard = art);
-    }).catchError((_) {});
-    _loginIdCtl.addListener(() {
-      _numLook?.change(_loginIdCtl.text.length.toDouble());
-    });
+      if (mounted) {
+        setState(() => _riveArtboard = art);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Rive initialization error: $e');
+      }
+    }
   }
 
   @override

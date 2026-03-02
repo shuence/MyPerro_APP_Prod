@@ -27,24 +27,30 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: Color(0xFFF5832A),
+    return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.pets,
-              size: 80,
-              color: Colors.white,
+            Image.asset(
+              'assets/branding/splash_dog.png',
+              height: 400,
+              fit: BoxFit.contain,
             ),
-            SizedBox(height: 20),
-            Text(
-              'MyPerro',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+            const SizedBox(height: 40),
+            Image.asset(
+              'assets/branding/myperro_logo.svg',
+              height: 80,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(height: 20),
+            Container(
+              width: 60,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5832A),
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
           ],

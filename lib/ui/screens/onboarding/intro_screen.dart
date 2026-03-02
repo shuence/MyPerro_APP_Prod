@@ -54,6 +54,8 @@ class IntroScreen extends StatelessWidget {
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF6A6A6A),
+                  ).copyWith(
+                    fontFamily: 'Roboto',
                   ),
                   textAlign: TextAlign.center,
                 ),
