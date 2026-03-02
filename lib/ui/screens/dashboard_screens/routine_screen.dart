@@ -89,7 +89,7 @@ class _RoutineScreenState extends State<RoutineScreen> {
     final media = MediaQuery.of(context);
     final ts = media.textScaleFactor.clamp(1.0, 1.3);
     return MediaQuery(
-      data: media.copyWith(textScaleFactor: ts),
+      data: media.copyWith(textScaler: TextScaler.linear(ts)),
       child: Scaffold(
         backgroundColor: _pageBg,
         appBar: AppBar(
@@ -149,12 +149,12 @@ class _RoutineScreenState extends State<RoutineScreen> {
       barrierDismissible: true,
       builder: (ctx) => _SoftDialog(
         title: 'Routine Name*',
+        primaryText: 'Next',
+        onPrimary: () => Navigator.pop(ctx, true),
         child: TextField(
           controller: nameCtrl,
           decoration: const InputDecoration(border: InputBorder.none),
         ),
-        primaryText: 'Next',
-        onPrimary: () => Navigator.pop(ctx, true),
       ),
     );
 
@@ -194,6 +194,14 @@ class _RoutineScreenState extends State<RoutineScreen> {
 
           return _SoftDialog(
             title: routine.name,
+            primaryText: 'Confirm',
+            onPrimary: () {
+              if (nameCtrl.text.trim().isEmpty || start == null) return;
+              setState(() {
+                routine.activities.add(_Activity(nameCtrl.text, start: start, end: end));
+              });
+              Navigator.pop(ctx);
+            },
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -224,14 +232,6 @@ class _RoutineScreenState extends State<RoutineScreen> {
                 ),
               ],
             ),
-            primaryText: 'Confirm',
-            onPrimary: () {
-              if (nameCtrl.text.trim().isEmpty || start == null) return;
-              setState(() {
-                routine.activities.add(_Activity(nameCtrl.text, start: start, end: end));
-              });
-              Navigator.pop(ctx);
-            },
           );
         });
       },
@@ -354,7 +354,7 @@ class _RoutineCardState extends State<_RoutineCard> {
                 ),
                 Switch(
                   value: widget.routine.enabled,
-                  activeColor: _brandOrange,
+                  activeThumbColor: _brandOrange,
                   onChanged: (v) => widget.onToggleEnabled(v),
                 ),
               ],
@@ -376,10 +376,10 @@ class _RoutineCardState extends State<_RoutineCard> {
                   InkWell(
                     onTap: widget.onAddMore,
                     borderRadius: BorderRadius.circular(10),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 10),
                       child: Row(
-                        children: const [
+                        children: [
                           Icon(Icons.add, size: 18, color: _grey700),
                           SizedBox(width: 8),
                           Text('Add More', style: TextStyle(color: _grey700)),

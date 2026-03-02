@@ -177,7 +177,7 @@ class _CircularPetUploadTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 220,
       width: double.infinity,
       child: Center(
@@ -193,7 +193,7 @@ class _CircularPetUploadTile extends StatelessWidget {
                 Container(
                   width: 160,
                   height: 160,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),

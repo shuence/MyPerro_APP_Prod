@@ -1,0 +1,541 @@
+name: Myperro Android CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    name: Build, Upload & Email
+    runs-on: ubuntu-latest
+    # Skip if this is a version increment commit
+    if: '!contains(github.event.head_commit.message, ''[skip ci]'')'
+
+    steps:
+      # 🧩 Checkout code
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # ☕ Setup JDK (with Gradle cache)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      # ⚙️ Gradle permissions
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # ⚡ Setup Gradle (optimizes build, configures cache)
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          cache-read-only: false
+
+      # 🔧 Enable Gradle build cache and optimizations
+      - name: Configure Gradle for CI
+        run: |
+          echo "org.gradle.caching=true" >> gradle.properties
+          echo "org.gradle.parallel=true" >> gradle.properties
+          echo "org.gradle.configureondemand=true" >> gradle.properties
+          echo "org.gradle.daemon=false" >> gradle.properties
+          echo "org.gradle.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=1g -XX:+UseG1GC -XX:+UseStringDeduplication" >> gradle.properties
+          echo "org.gradle.workers.max=6" >> gradle.properties
+          echo "org.gradle.buildcache.remote.enabled=false" >> gradle.properties
+          echo "android.useAndroidX=true" >> gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
+          echo "android.enableR8.fullMode=true" >> gradle.properties
+          echo "android.enableD8.desugaring=true" >> gradle.properties
+          echo "android.enableAapt2=true" >> gradle.properties
+          echo "android.enableIncrementalDesugaring=true" >> gradle.properties
+
+      # 🔐 Decode Keystore
+      - name: Decode Keystore
+        run: |
+          mkdir -p android/app
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/myperro-key.jks
+          echo "✅ Decoded Keystore"
+          ls -lah android/app/myperro-key.jks
+          
+      # 🔧 Create key.properties for CI
+      - name: Create key.properties for CI
+        run: |
+          cat > android/key.properties << 'EOF'
+          storeFile=app/myperro-key.jks
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyAlias=myperro-key
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          EOF
+          echo "✅ Created key.properties"
+          cat android/key.properties
+
+      # 🔥 Decode google-services.json (Firebase)
+      - name: Decode google-services.json
+        run: |
+          mkdir -p android/app
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/google-services.json
+          echo "✅ Decoded google-services.json"
+          ls -lah android/app/google-services.json
+
+      # 🔥 Decode firebase_options.dart (Firebase Dart Configuration)
+      - name: Decode firebase_options.dart
+        run: |
+          mkdir -p lib
+          echo "${{ secrets.FIREBASE_OPTIONS_DART_BASE64 }}" | base64 --decode > lib/firebase_options.dart
+          echo "✅ Decoded firebase_options.dart"
+          ls -lah lib/firebase_options.dart
+
+      # 🐦 Setup Flutter
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.3.1'
+          cache: true
+
+      # 📦 Get Flutter Dependencies
+      - name: Get Flutter Dependencies
+        run: |
+          flutter pub get
+          echo "✅ Dependencies installed"
+
+      # 🔨 Run Build Runner (for code generation)
+      - name: Run Build Runner
+        run: |
+          flutter pub run build_runner build --delete-conflicting-outputs
+          echo "✅ Code generation complete"
+
+      # 📝 Generate Release Notes (before version increment)
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+          # Get commit info with proper escaping
+          COMMIT_HASH=$(git log -1 --pretty=format:"%h")
+          COMMIT_TITLE=$(git log -1 --pretty=format:"%s")
+          COMMIT_BODY=$(git log -1 --pretty=format:"%b")
+          COMMIT_AUTHOR=$(git log -1 --pretty=format:"%an")
+          
+          # Create formatted notes with proper escaping
+          if [ -n "$COMMIT_BODY" ]; then
+            NOTES="$COMMIT_HASH - $COMMIT_TITLE"$'\n\n'"$COMMIT_BODY"$'\n\n'"($COMMIT_AUTHOR)"
+          else
+            NOTES="$COMMIT_HASH - $COMMIT_TITLE ($COMMIT_AUTHOR)"
+          fi
+          
+          # Convert markdown to HTML for email
+          HTML_NOTES=$(echo "$NOTES" | sed -E '
+            # Convert line breaks to <br>
+            s/$/<br>/g
+            # Convert **bold** to <strong>
+            s/\*\*([^*]+)\*\*/<strong>\1<\/strong>/g
+            # Convert *italic* to <em>
+            s/\*([^*]+)\*/<em>\1<\/em>/g
+            # Convert `code` to <code>
+            s/`([^`]+)`/<code>\1<\/code>/g
+            # Convert # headers to <h3>
+            s/^# (.+)$/<h3>\1<\/h3>/g
+            # Convert ## headers to <h4>
+            s/^## (.+)$/<h4>\1<\/h4>/g
+            # Convert ### headers to <h5>
+            s/^### (.+)$/<h5>\1<\/h5>/g
+            # Convert - list items to <li>
+            s/^- (.+)$/<li>\1<\/li>/g
+            # Convert links [text](url) to <a href="url">text</a>
+            s/\[([^\]]+)\]\(([^)]+)\)/<a href="\2">\1<\/a>/g
+          ')
+          
+          # Create plain text notes (strip common markdown)
+          PLAIN_NOTES=$(echo "$NOTES" | sed -E \
+            -e 's/`([^`]+)`/\1/g' \
+            -e 's/\*\*([^*]+)\*\*/\1/g' \
+            -e 's/\*([^*]+)\*/\1/g' \
+            -e 's/^#+[[:space:]]*(.+)$/\1/g' \
+            -e 's/!\[[^\]]*\]\([^)]*\)//g' \
+            -e 's/\[([^\]]+)\]\(([^)]+)\)/\1/g' \
+            -e 's/^[[:space:]]*-[[:space:]]*/- /g'
+          )
+
+          # Convert to bullet points: prefix non-empty lines with '- ' unless already present
+          BULLET_NOTES=$(echo "$PLAIN_NOTES" | awk '{
+            if ($0 ~ /^- /) { print $0 }
+            else if (NF) { print "- " $0 }
+            else { print "" }
+          }')
+          
+          # Simple notes for Firebase (no markdown conversion, just raw text)
+          SIMPLE_NOTES="$COMMIT_HASH - $COMMIT_TITLE"
+          if [ -n "$COMMIT_BODY" ]; then
+            SIMPLE_NOTES="$SIMPLE_NOTES"$'\n\n'"$COMMIT_BODY"
+          fi
+          SIMPLE_NOTES="$SIMPLE_NOTES"$'\n\n'"Author: $COMMIT_AUTHOR"
+          
+          # Use delimiter to avoid issues with special characters
+          {
+            echo "notes<<EOF"
+            echo "$NOTES"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+          
+          {
+            echo "html_notes<<EOF"
+            echo "$HTML_NOTES"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+          {
+            echo "plain_notes<<EOF"
+            echo "$BULLET_NOTES"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+          {
+            echo "simple_notes<<EOF"
+            echo "$SIMPLE_NOTES"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      # 🔢 Increment Version Code and Name
+      - name: Increment Version Code and Name
+        id: version_code
+        run: |
+          # Read current version code from local.properties
+          CURRENT_VERSION_CODE=$(grep -E '^\s*flutter.versionCode\s*=\s*[0-9]+' android/local.properties 2>/dev/null | grep -oE '[0-9]+' | head -1)
+          
+          # If not found in local.properties, read from build.gradle
+          if [ -z "$CURRENT_VERSION_CODE" ]; then
+            CURRENT_VERSION_CODE=$(grep -E '^\s*versionCode\s*=\s*[0-9]+' android/app/build.gradle | grep -oE '[0-9]+' | head -1)
+          fi
+          
+          echo "Current version code: $CURRENT_VERSION_CODE"
+          
+          # Read current version name from local.properties
+          CURRENT_VERSION_NAME=$(grep -E '^\s*flutter.versionName\s*=\s*' android/local.properties 2>/dev/null | sed -E 's/^\s*flutter.versionName\s*=\s*"?([^"]*)"?/\1/')
+          
+          # If not found in local.properties, read from build.gradle
+          if [ -z "$CURRENT_VERSION_NAME" ]; then
+            CURRENT_VERSION_NAME=$(grep -E '^\s*versionName\s*=\s*' android/app/build.gradle | sed -E 's/^\s*versionName\s*=\s*"([^"]*)"/\1/')
+          fi
+          
+          echo "Current version name: $CURRENT_VERSION_NAME"
+          
+          # Validate that we found the version information
+          if [ -z "$CURRENT_VERSION_CODE" ] || [ -z "$CURRENT_VERSION_NAME" ]; then
+            echo "❌ Error: Could not extract version information"
+            echo "Current version code: '$CURRENT_VERSION_CODE'"
+            echo "Current version name: '$CURRENT_VERSION_NAME'"
+            exit 1
+          fi
+          
+          # Increment version code
+          NEW_VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
+          echo "New version code: $NEW_VERSION_CODE"
+          
+          # Increment version name (e.g., 1.0.1 -> 1.0.2)
+          IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION_NAME"
+          if [ ${#VERSION_PARTS[@]} -ne 3 ]; then
+            echo "❌ Error: Version name format should be X.Y.Z, got: $CURRENT_VERSION_NAME"
+            exit 1
+          fi
+          
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          PATCH=${VERSION_PARTS[2]}
+          
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION_NAME="$MAJOR.$MINOR.$NEW_PATCH"
+          echo "New version name: $NEW_VERSION_NAME"
+          
+          # Create backup of original file
+          cp android/app/build.gradle android/app/build.gradle.backup
+          
+          # Update build.gradle with new version code and name
+          sed -i "s/^\(\s*versionCode\s*=\s*\)$CURRENT_VERSION_CODE/\1$NEW_VERSION_CODE/" android/app/build.gradle
+          sed -i "s/^\(\s*versionName\s*=\s*\"\)$CURRENT_VERSION_NAME\(\"\)/\1$NEW_VERSION_NAME\2/" android/app/build.gradle
+          
+          # Verify the changes
+          echo "Updated version in build.gradle:"
+          grep -n "versionCode\|versionName" android/app/build.gradle
+          
+          # Double-check the changes were applied correctly
+          UPDATED_VERSION_CODE=$(grep -E '^\s*versionCode\s*=\s*[0-9]+' android/app/build.gradle | grep -oE '[0-9]+' | head -1)
+          UPDATED_VERSION_NAME=$(grep -E '^\s*versionName\s*=\s*' android/app/build.gradle | sed -E 's/^\s*versionName\s*=\s*"([^"]*)"/\1/')
+          
+          if [ "$UPDATED_VERSION_CODE" != "$NEW_VERSION_CODE" ] || [ "$UPDATED_VERSION_NAME" != "$NEW_VERSION_NAME" ]; then
+            echo "❌ Error: Version update failed. Restoring backup..."
+            cp android/app/build.gradle.backup android/app/build.gradle
+            exit 1
+          fi
+          
+          # Set outputs for later use
+          echo "old_version_code=$CURRENT_VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "new_version_code=$NEW_VERSION_CODE" >> $GITHUB_OUTPUT
+          echo "old_version_name=$CURRENT_VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "new_version_name=$NEW_VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "✅ Version incremented from $CURRENT_VERSION_NAME ($CURRENT_VERSION_CODE) to $NEW_VERSION_NAME ($NEW_VERSION_CODE)"
+
+      # 💾 Commit version changes back to repository
+      - name: Commit Version Changes
+        run: |
+          # Configure git
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Check if there are changes to commit
+          if git diff --quiet android/local.properties; then
+            echo "No version changes to commit"
+          else
+            # Add the modified file
+            git add android/local.properties
+            
+            # Commit the changes with [skip ci] to prevent infinite loop
+            git commit -m "🚀 Auto-increment version to ${{ steps.version_code.outputs.new_version_name }} (${{ steps.version_code.outputs.new_version_code }}) [skip ci]"
+            
+            # Push the changes back to the repository
+            git push origin main
+            
+            echo "✅ Version changes committed and pushed to repository"
+          fi
+
+      # 🔍 Check Keystore, key.properties and google-services.json
+      - name: Check Keystore, key.properties and google-services.json
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Checking keystore..."
+          ls -lah android/app/myperro-key.jks
+          echo "Checking key.properties..."
+          ls -lah android/key.properties
+          echo "Checking google-services.json..."
+          ls -lah android/app/google-services.json
+          echo ""
+          echo "Keystore exists: $(if [ -f android/app/myperro-key.jks ]; then echo "✅ yes"; else echo "❌ no"; fi)"
+          echo "key.properties exists: $(if [ -f android/key.properties ]; then echo "✅ yes"; else echo "❌ no"; fi)"
+          echo "google-services.json exists: $(if [ -f android/app/google-services.json ]; then echo "✅ yes"; else echo "❌ no"; fi)"
+          echo ""
+          echo "Contents of key.properties:"
+          cat android/key.properties
+
+      # 🏗️ Build All Variants (optimized)
+      - name: Build Signed APKs & AAB
+        run: |
+          ./gradlew assembleRelease bundleRelease \
+            --parallel \
+            --max-workers=6 \
+            --build-cache \
+            --no-daemon \
+            --configuration-cache \
+            --configuration-cache-problems=warn \
+            --no-scan
+
+      # 🔍 Find build outputs
+      - name: Find APK & AAB
+        id: find_files
+        run: |
+          # Prefer known standard AGP output paths, fallback to search
+          DEFAULT_APK="android/app/build/outputs/apk/release/app-release.apk"
+          DEFAULT_AAB="android/app/build/outputs/bundle/release/app-release.aab"
+          
+          if [ -f "$DEFAULT_APK" ]; then APK_PATH="$DEFAULT_APK"; else APK_PATH=$(find android/app/build/outputs/apk -type f -name "*release*.apk" | head -n 1); fi
+          if [ -f "$DEFAULT_AAB" ]; then AAB_PATH="$DEFAULT_AAB"; else AAB_PATH=$(find android/app/build/outputs/bundle -type f -name "*release*.aab" | head -n 1); fi
+          
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+          echo "aab_path=$AAB_PATH" >> $GITHUB_OUTPUT
+          echo "✅ Found Release APK: $APK_PATH"
+          echo "✅ Found Release AAB: $AAB_PATH"
+
+      # 📤 Create Release and Upload Files using GitHub CLI
+      - name: Create Release and Upload Files
+        id: create_release
+        run: |
+          TAG_NAME="build-${{ github.run_number }}-${{ github.sha }}"
+          
+          # Rename files to myperro format
+          APK_NAME="myperro${{ github.run_number }}.apk"
+          AAB_NAME="myperro${{ github.run_number }}.aab"
+          
+          # Copy and rename files
+          cp "${{ steps.find_files.outputs.apk_path }}" "$APK_NAME"
+          cp "${{ steps.find_files.outputs.aab_path }}" "$AAB_NAME"
+          
+          echo "Renamed files:"
+          echo "APK: $APK_NAME"
+          echo "AAB: $AAB_NAME"
+          
+          # Create release
+          gh release create $TAG_NAME \
+            --title "Android Build ${{ github.run_number }}" \
+            --notes "## 🚀 Myperro Android Build #${{ github.run_number }}
+            
+            ### 📱 **Release Information**
+            - **Version:** ${{ steps.version_code.outputs.new_version_name }} (Build ${{ github.run_number }})
+            - **Version Code:** ${{ steps.version_code.outputs.new_version_code }} (was ${{ steps.version_code.outputs.old_version_code }})
+            - **Commit:** \`${{ github.sha }}\`
+            - **Branch:** \`${{ github.ref_name }}\`
+            - **Triggered by:** ${{ github.actor }}
+            
+            ### 📦 **Downloads**
+            - **APK (Release):** \`$APK_NAME\` - Production build for Google Play Store
+            - **AAB (Release):** \`$AAB_NAME\` - Upload to Google Play Console
+            
+            ### 🔧 **Build Configuration**
+            - **Target SDK:** 36 (Android 14)
+            - **Min SDK:** 29 (Android 10)
+            - **Release Build:** Optimized & Signed
+            
+            ### 📋 **Installation Instructions**
+            1. **Production APK:** Download and install directly on Android device
+            2. **AAB:** Upload to Google Play Console for distribution
+            
+            ---
+            *This build was automatically generated by GitHub Actions CI/CD*" \
+            --prerelease \
+            "$APK_NAME" \
+            "$AAB_NAME"
+          
+          # Get release URL
+          RELEASE_URL=$(gh release view $TAG_NAME --json url -q .url)
+          echo "release_url=$RELEASE_URL" >> $GITHUB_OUTPUT
+          echo "✅ Created release: $TAG_NAME"
+          echo "✅ Release URL: $RELEASE_URL"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 🔗 Generate Download URLs
+      - name: Generate Download URLs
+        id: generate_urls
+        run: |
+          TAG_NAME="build-${{ github.run_number }}-${{ github.sha }}"
+          APK_NAME="myperro${{ github.run_number }}.apk"
+          AAB_NAME="myperro${{ github.run_number }}.aab"
+          APK_URL="https://github.com/${{ github.repository }}/releases/download/$TAG_NAME/$APK_NAME"
+          AAB_URL="https://github.com/${{ github.repository }}/releases/download/$TAG_NAME/$AAB_NAME"
+          echo "apk_url=$APK_URL" >> $GITHUB_OUTPUT
+          echo "aab_url=$AAB_URL" >> $GITHUB_OUTPUT
+          echo "release_url=${{ steps.create_release.outputs.release_url }}" >> $GITHUB_OUTPUT
+          echo "✅ APK URL: $APK_URL"
+          echo "✅ AAB URL: $AAB_URL"
+          echo "✅ Release URL: ${{ steps.create_release.outputs.release_url }}"
+
+      # 🔥 Deploy to Firebase App Distribution (Release APK)
+      - name: Upload Release APK to Firebase App Distribution
+        id: upload_to_firebase
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ secrets.FIREBASE_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          file: ${{ steps.find_files.outputs.apk_path }}
+          groups: ${{ secrets.TEST_GROUP_NAME }}
+          releaseNotes: |
+            🚀 **Release Build** - Build #${{ github.run_number }}
+            
+            Version: ${{ steps.version_code.outputs.new_version_name }} (Build ${{ steps.version_code.outputs.new_version_code }})
+            
+            ${{ steps.release_notes.outputs.simple_notes }}
+
+      # 📧 Email build links (two recipients)
+      - name: Send Email with Build Links
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "🚀 Android Build Ready - ${{ github.run_number }} (${{ github.run_attempt }})"
+          to: ${{secrets.EMAIL_TO}}
+          from: "GitHub CI/CD <${{ secrets.EMAIL_USERNAME }}>"
+          html_body: |
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+              <meta charset="UTF-8" />
+              <title>Myperro Android Build Ready!</title>
+              <style>
+                body {
+                  background: #fafbff;
+                  margin: 0;
+                  padding: 40px 0;
+                  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+                  color: #1f2937;
+                }
+                .wrap { max-width: 720px; margin: auto; padding: 0 16px; }
+                .card {
+                  background: #fff;
+                  border: 1px solid #eef1f5;
+                  border-radius: 18px;
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, .07);
+                  padding: 28px;
+                }
+                h1 { font-size: 26px; margin: 0 0 14px; color: #1f2937 }
+                h2 { font-size: 24px; margin: 18px 0 10px; color: #2563eb }
+                h3 { font-size: 19px; margin: 16px 0 8px; color: #111827 }
+                p { line-height: 1.65; margin: 10px 0 }
+                ul { padding-left: 22px; margin: 10px 0 }
+                li { margin: 6px 0 }
+                a { color: #2563eb; text-decoration: none; font-weight: 500 }
+                a:hover { text-decoration: underline }
+                hr { border: 0; border-top: 1px solid #e5e7eb; margin: 22px 0 }
+                em { color: #374151 }
+                strong { font-weight: 600; color: #111827 }
+                code { 
+                  background: #f3f4f6; 
+                  padding: 2px 6px; 
+                  border-radius: 4px; 
+                  font-family: 'Monaco', 'Consolas', monospace; 
+                  font-size: 0.9em;
+                  color: #dc2626;
+                }
+                h3, h4, h5 { 
+                  margin: 16px 0 8px; 
+                  color: #2563eb; 
+                }
+                h3 { font-size: 19px; }
+                h4 { font-size: 17px; }
+                h5 { font-size: 15px; }
+                li { margin: 4px 0; }
+              </style>
+            </head>
+            <body>
+              <div class="wrap">
+                <div class="card">
+                  <h1>🚀 Myperro Android Build Ready!</h1>
+                  <p>Hello 👋 Your new Android build is ready for download.</p>
+
+                  <h2>📱 Download Links</h2>
+                  <ul>
+                    <li><strong>APK:</strong> <a href="${{ steps.generate_urls.outputs.apk_url }}" target="_blank">${{ steps.generate_urls.outputs.apk_url }}</a> <em>(Install directly on Android devices)</em></li>
+                    <li><strong>AAB:</strong> <a href="${{ steps.generate_urls.outputs.aab_url }}" target="_blank">${{ steps.generate_urls.outputs.aab_url }}</a> <em>(Upload to Google Play Console)</em></li>
+                    <li><strong>Release Page:</strong> <a href="${{ steps.generate_urls.outputs.release_url }}" target="_blank">${{ steps.generate_urls.outputs.release_url }}</a></li>
+                  </ul>
+
+                  <h2>📋 Build Information</h2>
+                  <ul>
+                    <li><strong>Build #:</strong> ${{ github.run_number }}</li>
+                    <li><strong>Version:</strong> ${{ steps.version_code.outputs.new_version_name }}</li>
+                    <li><strong>Version Code:</strong> ${{ steps.version_code.outputs.new_version_code }} (incremented from ${{ steps.version_code.outputs.old_version_code }})</li>
+                    <li><strong>Commit:</strong> ${{ github.sha }}</li>
+                    <li><strong>Branch:</strong> ${{ github.ref_name }}</li>
+                    <li><strong>Triggered by:</strong> ${{ github.actor }}</li>
+                  </ul>
+
+                  <h2>📌 Latest Changes</h2>
+                  <div>${{ steps.release_notes.outputs.html_notes }}</div>
+
+                  <h2>🔧 Build Configuration</h2>
+                  <ul>
+                    <li><strong>Target SDK:</strong> 36 (Android 14)</li>
+                    <li><strong>Min SDK:</strong> 29 (Android 10)</li>
+                    <li><strong>Build Type:</strong> Release (Optimized & Signed)</li>
+                  </ul>
+
+                  <hr>
+                  <p><em>Sent automatically via GitHub Actions CI/CD</em> 💫</p>
+                </div>
+              </div>
+            </body>
+            </html>

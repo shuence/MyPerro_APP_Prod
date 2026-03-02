@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myperro_app_merged/ui/screens/chat/chat_list_screen.dart';
+import 'package:myperro/ui/screens/chat/chat_list_screen.dart';
 import '../../widgets/myperro_bottom_nav.dart';
 import '../map/map_home_screen.dart';
 import 'pet_card_expanded_screen.dart';
@@ -91,7 +91,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ];
 
     return MediaQuery(
-      data: media.copyWith(textScaleFactor: ts),
+      data: media.copyWith(textScaler: TextScaler.linear(ts)),
       child: Scaffold(
         backgroundColor: _pageBg,
         appBar: _selectedIndex == 2 ? _TopBar(onDoctorsIconTap: _openDoctorsScreen) : null,
@@ -273,7 +273,7 @@ class _DashboardBody extends StatelessWidget {
                 ),
                 leading: const Icon(Icons.check_circle_outline, color: Colors.green),
               ),
-            )).toList(),
+            )),
             const SizedBox(height: 16),
           ],
         ],

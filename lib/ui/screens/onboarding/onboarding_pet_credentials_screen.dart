@@ -281,10 +281,9 @@ class _BottomBorderField extends StatelessWidget {
   const _BottomBorderField({
     required this.controller,
     required this.hintText,
-    this.keyboardType,
     this.onChanged,
     this.onTap,
-    this.readOnly = false,
+    this.readOnly = false, this.keyboardType,
   });
 
   @override

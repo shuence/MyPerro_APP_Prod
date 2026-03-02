@@ -1,6 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:myperro_app_merged/features/collar_setup/screens/qr_scan_collar_screen.dart';
+import 'package:myperro/features/collar_setup/screens/qr_scan_collar_screen.dart';
 
 const _brandOrange = Color(0xFFF5832A);
 const _titleBlack = Color(0xFF1F1F1F);
@@ -117,14 +117,14 @@ class _PrimaryCTA extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final VoidCallback onTap = () {
+    void onTap() {
       // Navigate to collar setup flow after pet onboarding
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => const QrScanCollarScreen(),
         ),
       );
-    };
+    }
 
     return Stack(
       clipBehavior: Clip.none,

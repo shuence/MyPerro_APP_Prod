@@ -52,18 +52,18 @@ class SubscriptionPeriodScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Column(
+              child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Subscription Period Left',
                     style: TextStyle(
                       fontSize: 14,
                       color: _grey600,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     '3 Months',
                     style: TextStyle(
                       fontSize: 24,
@@ -98,7 +98,7 @@ class SubscriptionPeriodScreen extends StatelessWidget {
                     child: _SubscriptionCard(
                       title: 'Starter Pack',
                       duration: '3 Months',
-                      features: [
+                      features: const [
                         'GPS Tracking',
                         'Basic Health Monitoring',
                         'Activity Tracker',
@@ -118,7 +118,7 @@ class SubscriptionPeriodScreen extends StatelessWidget {
                     child: _SubscriptionCard(
                       title: 'Lifetime Pack',
                       duration: 'Lifetime',
-                      features: [
+                      features: const [
                         'GPS Tracking',
                         'Advanced Health Monitoring',
                         'Activity Tracker',
@@ -139,7 +139,7 @@ class SubscriptionPeriodScreen extends StatelessWidget {
                     child: _SubscriptionCard(
                       title: 'Yearly Pack',
                       duration: '1 Year',
-                      features: [
+                      features: const [
                         'GPS Tracking',
                         'Health Monitoring',
                         'Activity Tracker',

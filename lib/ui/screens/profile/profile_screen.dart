@@ -179,12 +179,12 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    Row(
+                    const Row(
                       children: [
                         _PetAvatar('Krypto', 'assets/images/pet1.png'),
-                        const SizedBox(width: 16),
+                        SizedBox(width: 16),
                         _PetAvatar('Bobby', 'assets/images/pet2.png'),
-                        const SizedBox(width: 16),
+                        SizedBox(width: 16),
                         _PetAvatar('Leo', 'assets/images/pet3.png'),
                       ],
                     ),

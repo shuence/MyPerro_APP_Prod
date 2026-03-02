@@ -217,7 +217,7 @@ class _UserPermissionsScreenState extends State<UserPermissionsScreen> {
                       ),
                       trailing: Switch(
                         value: isSelected,
-                        activeColor: _brandOrange,
+                        activeThumbColor: _brandOrange,
                         onChanged: (value) {
                           setState(() {
                             if (value) {

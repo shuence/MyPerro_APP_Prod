@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class NotificationsScreen extends StatefulWidget {
   final String petName;
 
-  const NotificationsScreen({Key? key, required this.petName}) : super(key: key);
+  const NotificationsScreen({super.key, required this.petName});
 
   @override
   State<NotificationsScreen> createState() => _NotificationsScreenState();

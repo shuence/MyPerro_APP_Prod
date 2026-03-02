@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myperro_app_merged/ui/screens/onboarding/location_osm_screen.dart';
+import 'package:myperro/ui/screens/onboarding/location_osm_screen.dart';
 
 import 'dart:ui' as ui;
 

@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myperro_app_merged/ui/screens/profile/edit_profile_screen.dart' as _nameController;
-import 'package:myperro_app_merged/ui/screens/profile/edit_profile_screen.dart' as _aboutController show dispose;
-import 'package:myperro_app_merged/ui/screens/profile/edit_profile_screen.dart' as _phoneController;
-import 'package:myperro_app_merged/ui/screens/profile/edit_profile_screen.dart' as _emailController;
 
 const _brandOrange = Color(0xFFF5832A);
 const _pageBg = Color(0xFFF7F7F7);
@@ -191,11 +187,11 @@ class _ProfileField extends StatelessWidget {
             fillColor: Colors.white,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: _grey300),
+              borderSide: const BorderSide(color: _grey300),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: _grey300),
+              borderSide: const BorderSide(color: _grey300),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),

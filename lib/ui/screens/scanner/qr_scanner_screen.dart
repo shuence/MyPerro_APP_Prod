@@ -161,9 +161,9 @@ class _QRScannerScreenState extends State<QRScannerScreen>
                   
                   const SizedBox(height: 40),
                   
-                  Text(
+                  const Text(
                     'Position the QR code within the frame',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
@@ -368,8 +368,8 @@ class _CornerBracketPainter extends CustomPainter {
 
     switch (corner) {
       case Corner.topLeft:
-        canvas.drawLine(Offset(0, size.height * 0.7), Offset(0, 0), paint);
-        canvas.drawLine(Offset(0, 0), Offset(size.width * 0.7, 0), paint);
+        canvas.drawLine(Offset(0, size.height * 0.7), const Offset(0, 0), paint);
+        canvas.drawLine(const Offset(0, 0), Offset(size.width * 0.7, 0), paint);
         break;
       case Corner.topRight:
         canvas.drawLine(Offset(size.width * 0.3, 0), Offset(size.width, 0), paint);

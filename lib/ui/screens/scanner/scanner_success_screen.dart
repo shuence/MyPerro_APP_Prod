@@ -63,9 +63,9 @@ class ScannerSuccessScreen extends StatelessWidget {
               
               const SizedBox(height: 32),
               
-              Text(
+              const Text(
                 'Successfully Added!',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
                   color: _grey900,
@@ -146,7 +146,7 @@ class ScannerSuccessScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                    ).toList(),
+                    ),
                   ],
                 ),
               ),

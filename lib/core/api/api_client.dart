@@ -43,7 +43,7 @@ class ApiClient {
             headers: _buildHeaders(),
             body: jsonEncode(request.toJson()),
           )
-          .timeout(Duration(seconds: Env.apiTimeoutSeconds));
+          .timeout(const Duration(seconds: Env.apiTimeoutSeconds));
 
       _logResponse(response);
 
@@ -130,7 +130,7 @@ class ApiClient {
             headers: _buildHeaders(authToken: collarToken),
             body: jsonEncode(requestBody),
           )
-          .timeout(Duration(seconds: Env.apiTimeoutSeconds));
+          .timeout(const Duration(seconds: Env.apiTimeoutSeconds));
 
       _logResponse(response);
 
@@ -205,7 +205,7 @@ class ApiClient {
             headers: _buildHeaders(authToken: collarToken),
             body: jsonEncode(requestBody),
           )
-          .timeout(Duration(seconds: Env.apiTimeoutSeconds));
+          .timeout(const Duration(seconds: Env.apiTimeoutSeconds));
 
       _logResponse(response);
 

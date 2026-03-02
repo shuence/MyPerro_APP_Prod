@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myperro_app_merged/core/api/api_client.dart';
-import 'package:myperro_app_merged/core/api/api_service.dart';
-import 'package:myperro_app_merged/core/ble/ble_controller.dart';
-import 'package:myperro_app_merged/core/models/registration.dart';
+import 'package:myperro/core/api/api_client.dart';
+import 'package:myperro/core/api/api_service.dart';
+import 'package:myperro/core/ble/ble_controller.dart';
+import 'package:myperro/core/models/registration.dart';
 import 'geofence_setup_screen.dart';
 
 /// Collar registration screen - Handles backend registration and token transmission

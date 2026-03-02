@@ -5,6 +5,7 @@ A comprehensive pet tracking and safety application built with Flutter. Track yo
 ## 📱 Features
 
 ### ✅ Implemented
+
 - ✅ **Pet Registration** - Complete onboarding flow with pet details, photos, and health records
 - ✅ **GPS Tracking** - Real-time location tracking using OpenStreetMap
 - ✅ **User Authentication** - Email, Google, and Apple sign-in (UI ready)
@@ -13,6 +14,7 @@ A comprehensive pet tracking and safety application built with Flutter. Track yo
 - ✅ **Multi-User Access** - Share pet access with caretakers and family members
 
 ### 🚧 In Development (See [ROADMAP.md](ROADMAP.md))
+
 - 🚧 **BLE Collar Communication** - Bluetooth connectivity with pet collar devices
 - 🚧 **QR Code Pairing** - Scan collar IMEI for quick setup
 - 🚧 **Geofence Setup** - Set custom safe zones for your pet
@@ -21,6 +23,7 @@ A comprehensive pet tracking and safety application built with Flutter. Track yo
 - 🚧 **Backend Integration** - API for registration, tracking, and alerts
 
 ### 📋 Planned
+
 - 📋 **Push Notifications** - Real-time alerts for lost mode
 - 📋 **Location History** - Historical tracking data and analytics
 - 📋 **Emergency Contacts** - Share pet location with trusted contacts
@@ -59,6 +62,7 @@ lib/
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Flutter SDK >= 3.3.1
 - Android Studio / Xcode
 - Android device/emulator (API 21+)
@@ -67,17 +71,20 @@ lib/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd myperro_app-main
    ```
 
 2. **Install dependencies**
+
    ```bash
    flutter pub get
    ```
 
 3. **Run the app**
+
    ```bash
    # Android
    flutter run
@@ -101,23 +108,27 @@ See [TODO.md](TODO.md) for detailed Phase 0 setup instructions.
 ## 📦 Dependencies
 
 ### Core Packages
+
 - `google_fonts` - Typography
 - `flutter_svg` - SVG support
 - `rive` - Animations
 - `font_awesome_flutter` - Icons
 
 ### Location & Maps (OpenStreetMap - FREE)
+
 - `flutter_map` - Map rendering ✅
 - `latlong2` - Coordinate handling ✅
 - `geolocator` - GPS location services ✅
 - `geocoding` - Reverse geocoding ✅
 
 ### Networking & Media
+
 - `http` - API requests
 - `image_picker` - Photo selection
 - `file_picker` - Document selection
 
 ### In Development (Phase 0-3)
+
 - `flutter_blue_plus` - BLE communication 🚧
 - `mobile_scanner` - QR code scanning 🚧
 - `flutter_riverpod` - State management 🚧
@@ -170,6 +181,7 @@ flutter drive --target=test_driver/app.dart
 ## 🔐 Permissions Required
 
 ### Android (AndroidManifest.xml)
+
 - `INTERNET` - API communication & map tiles ✅
 - `ACCESS_FINE_LOCATION` - GPS tracking ✅
 - `ACCESS_COARSE_LOCATION` - GPS tracking ✅
@@ -179,6 +191,7 @@ flutter drive --target=test_driver/app.dart
 - `CAMERA` - QR code scanning 🚧
 
 ### iOS (Info.plist)
+
 - `NSLocationWhenInUseUsageDescription` ✅
 - `NSBluetoothAlwaysUsageDescription` 🚧
 - `NSCameraUsageDescription` 🚧
@@ -197,6 +210,7 @@ flutter drive --target=test_driver/app.dart
 ## 📞 Contact
 
 For questions or support:
+
 - **Developer:** [Your Name]
 - **Project Repository:** [Repository URL]
 - **Documentation:** See [ROADMAP.md](ROADMAP.md)

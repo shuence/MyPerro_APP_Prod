@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myperro_app_merged/ui/screens/dashboard_screens/dashboard_screen.dart';
+import 'package:myperro/ui/screens/dashboard_screens/dashboard_screen.dart';
 
 /// Setup complete screen - Final success screen
 ///
@@ -167,7 +167,7 @@ class SetupCompleteScreen extends StatelessWidget {
                       // Navigate to dashboard
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
-                          builder: (context) => const DashboardScreen(petName: 'Krypto'),
+                          builder: (context) => const DashboardScreen(petName: 'Pet Name'),
                         ),
                         (route) => false,
                       );

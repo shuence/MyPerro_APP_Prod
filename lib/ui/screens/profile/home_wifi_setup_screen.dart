@@ -87,11 +87,11 @@ class _HomeWifiSetupScreenState extends State<HomeWifiSetupScreen> {
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: _grey300),
+                      borderSide: const BorderSide(color: _grey300),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: _grey300),
+                      borderSide: const BorderSide(color: _grey300),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -131,11 +131,11 @@ class _HomeWifiSetupScreenState extends State<HomeWifiSetupScreen> {
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: _grey300),
+                      borderSide: const BorderSide(color: _grey300),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: _grey300),
+                      borderSide: const BorderSide(color: _grey300),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),

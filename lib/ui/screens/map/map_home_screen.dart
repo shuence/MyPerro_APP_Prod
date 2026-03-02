@@ -117,7 +117,7 @@ class _MapHomeScreenState extends State<MapHomeScreen> {
     final ts = media.textScaleFactor.clamp(1.0, 1.3);
 
     return MediaQuery(
-      data: media.copyWith(textScaleFactor: ts),
+      data: media.copyWith(textScaler: TextScaler.linear(ts)),
       child: Scaffold(
         backgroundColor: _pageBg,
         appBar: AppBar(
@@ -422,7 +422,7 @@ class _BottomPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
-    final collapsedH = 110.0;
+    const collapsedH = 110.0;
     final expandedH  = media.size.height * 0.46;
 
     final targetH = switch (state) {
@@ -475,9 +475,9 @@ class _BottomPanel extends StatelessWidget {
 
             // control row just above nav
             const SizedBox(height: 10),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: const [
+              children: [
                 _BarIcon(icon: Icons.home_outlined),
                 _BarIcon(icon: Icons.chat_bubble_outline),
                 _BarIcon(icon: Icons.pets_outlined),
@@ -673,11 +673,11 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 12),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
+        children: [
           _RingStat(valueText: '4.5 Km', label: 'Walk', icon: Icons.pets, percent: 0.9, color: _brandOrange),
           _RingStat(valueText: '8hrs',   label: 'Home', icon: Icons.home, percent: 0.66, color: Color(0xFF53D6E5)),
           _RingStat(valueText: '98%',    label: 'Safe', icon: Icons.shield_outlined, percent: 0.98, color: Color(0xFF52D16D)),
@@ -706,7 +706,7 @@ class _FeedCard extends StatelessWidget {
         child: Image.asset(
           imageAsset,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Center(
+          errorBuilder: (_, __, ___) => const Center(
             child: Icon(Icons.image_outlined, color: _grey500, size: 40),
           ),
         ),

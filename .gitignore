@@ -43,3 +43,20 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Keystore and signing files
+/android/app/myperro-key.jks
+/android/key.properties
+/android/app/google-services.json
+
+# Firebase configuration
+/ios/Runner/GoogleService-Info.plist
+
+# Secrets and local configuration
+/secrets
+/local.properties
+
+# Local documentation (development notes)
+/docs_local/
+/lib/firebase_options.dart
+

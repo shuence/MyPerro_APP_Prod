@@ -17,6 +17,12 @@
     <key>NSCameraUsageDescription</key>
     <string>MyPerro needs camera access to scan the collar QR code during setup.</string>
 
+    <!-- Google Maps API Key -->
+    <key>io.flutter.embedded_views_preview</key>
+    <true/>
+    <key>GMSApiKey</key>
+    <string>AIzaSyACA8JU-ZgP5yeq9wDJ-hC1AnKXs3Mn3AE</string>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

@@ -57,9 +57,9 @@ class _PetCardExpandedScreenState extends State<PetCardExpandedScreen> {
         return AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           contentPadding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-          content: Column(
+          content: const Column(
             mainAxisSize: MainAxisSize.min,
-            children: const [
+            children: [
               SizedBox(height: 6),
               Text('Are you sure you want to switch mode?',
                   textAlign: TextAlign.center,
@@ -118,7 +118,7 @@ class _PetCardExpandedScreenState extends State<PetCardExpandedScreen> {
     final media = MediaQuery.of(context);
     final ts = media.textScaleFactor.clamp(1.0, 1.3);
     return MediaQuery(
-      data: media.copyWith(textScaleFactor: ts),
+      data: media.copyWith(textScaler: TextScaler.linear(ts)),
       child: Scaffold(
         backgroundColor: _pageBg,
         appBar: AppBar(
@@ -146,8 +146,8 @@ class _PetCardExpandedScreenState extends State<PetCardExpandedScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
-                        children: const [
+                      const Row(
+                        children: [
                           _SquareIcon(icon: Icons.description_outlined),
                           Spacer(),
                           _SquareIcon(icon: Icons.close),
@@ -209,8 +209,8 @@ class _PetCardExpandedScreenState extends State<PetCardExpandedScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: const [
+                            const Row(
+                              children: [
                                 Expanded(
                                   child: Text('Tasks Completed Today',
                                       style: TextStyle(color: _grey600, fontSize: 12)),
@@ -234,8 +234,8 @@ class _PetCardExpandedScreenState extends State<PetCardExpandedScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           _RingStat(valueText: widget.walkText, label: 'Walk', icon: Icons.pets, percent: widget.walkPct, color: _brandOrange),
-                          _RingStat(valueText: widget.homeText, label: 'Home', icon: Icons.home, percent: widget.homePct, color: Color(0xFF53D6E5)),
-                          _RingStat(valueText: widget.safeText, label: 'Safe', icon: Icons.shield_outlined, percent: widget.safePct, color: Color(0xFF52D16D)),
+                          _RingStat(valueText: widget.homeText, label: 'Home', icon: Icons.home, percent: widget.homePct, color: const Color(0xFF53D6E5)),
+                          _RingStat(valueText: widget.safeText, label: 'Safe', icon: Icons.shield_outlined, percent: widget.safePct, color: const Color(0xFF52D16D)),
                         ],
                       ),
 
@@ -252,8 +252,8 @@ class _PetCardExpandedScreenState extends State<PetCardExpandedScreen> {
                                 MaterialPageRoute(builder: (_) => const RoutineScreen()),
                               );
                             },
-                            child: Row(
-                              children: const [
+                            child: const Row(
+                              children: [
                                 Text('Following', style: TextStyle(color: _grey600, fontSize: 12)),
                                 SizedBox(width: 10),
                                 Expanded(
@@ -377,8 +377,8 @@ class _StatusTrailingDot extends StatelessWidget {
   const _StatusTrailingDot({required this.text});
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: const [
+    return const Row(
+      children: [
         Icon(Icons.circle, size: 8, color: Color(0xFF46C46E)),
         SizedBox(width: 6),
         Text('At Home', style: TextStyle(color: _grey700, fontSize: 13)),

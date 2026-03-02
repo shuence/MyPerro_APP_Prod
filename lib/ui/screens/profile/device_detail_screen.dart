@@ -117,7 +117,7 @@ class DeviceDetailScreen extends StatelessWidget {
                       title: 'Power',
                       trailing: Switch(
                         value: true,
-                        activeColor: _brandOrange,
+                        activeThumbColor: _brandOrange,
                         onChanged: (value) {},
                       ),
                     ),
@@ -128,7 +128,7 @@ class DeviceDetailScreen extends StatelessWidget {
                       title: 'GPS Tracking',
                       trailing: Switch(
                         value: true,
-                        activeColor: _brandOrange,
+                        activeThumbColor: _brandOrange,
                         onChanged: (value) {},
                       ),
                     ),
@@ -139,7 +139,7 @@ class DeviceDetailScreen extends StatelessWidget {
                       title: 'Vibration',
                       trailing: Switch(
                         value: false,
-                        activeColor: _brandOrange,
+                        activeThumbColor: _brandOrange,
                         onChanged: (value) {},
                       ),
                     ),
@@ -150,7 +150,7 @@ class DeviceDetailScreen extends StatelessWidget {
                       title: 'Sound Alerts',
                       trailing: Switch(
                         value: true,
-                        activeColor: _brandOrange,
+                        activeThumbColor: _brandOrange,
                         onChanged: (value) {},
                       ),
                     ),
@@ -168,25 +168,25 @@ class DeviceDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     
-                    _InfoTile(
+                    const _InfoTile(
                       label: 'Device ID',
                       value: 'MP001234567',
                     ),
                     const SizedBox(height: 12),
                     
-                    _InfoTile(
+                    const _InfoTile(
                       label: 'Firmware Version',
                       value: 'v2.1.5',
                     ),
                     const SizedBox(height: 12),
                     
-                    _InfoTile(
+                    const _InfoTile(
                       label: 'Battery Level',
                       value: '87%',
                     ),
                     const SizedBox(height: 12),
                     
-                    _InfoTile(
+                    const _InfoTile(
                       label: 'Last Sync',
                       value: '2 minutes ago',
                     ),

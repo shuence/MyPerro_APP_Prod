@@ -69,13 +69,13 @@ class OnboardingSetupScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             // Step 1
-            _SetupStep(
+            const _SetupStep(
               number: '1',
               title: 'Press the button on the collar to turn it on.',
             ),
             const SizedBox(height: 16),
             // Step 2
-            _SetupStep(
+            const _SetupStep(
               number: '2',
               title: 'Connect to the WiFi network named "MyPerro-Collar" with the password',
               subtitle: 'dogsloveithere',
@@ -145,7 +145,7 @@ class _SetupStep extends StatelessWidget {
         Container(
           width: 24,
           height: 24,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: _grey700,
             shape: BoxShape.circle,
           ),

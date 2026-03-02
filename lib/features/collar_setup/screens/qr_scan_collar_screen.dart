@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:myperro_app_merged/core/ble/ble_constants.dart';
+import 'package:myperro/core/ble/ble_constants.dart';
 import 'collar_pairing_screen.dart';
 
 /// QR Scan screen for scanning collar IMEI
@@ -94,15 +94,15 @@ class _QrScanCollarScreenState extends State<QrScanCollarScreen> {
                 color: Colors.black54,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Column(
+              child: const Column(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.qr_code_scanner,
                     color: Colors.white,
                     size: 48,
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
+                  SizedBox(height: 12),
+                  Text(
                     'Position the QR code within the frame',
                     style: TextStyle(
                       color: Colors.white,
@@ -111,8 +111,8 @@ class _QrScanCollarScreenState extends State<QrScanCollarScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
-                  const Text(
+                  SizedBox(height: 8),
+                  Text(
                     'The QR code contains your collar\'s 15-digit IMEI',
                     style: TextStyle(
                       color: Colors.white70,
@@ -302,7 +302,7 @@ class ScannerOverlayPainter extends CustomPainter {
     canvas.drawPath(path, paint);
 
     // Draw corner borders
-    final cornerLength = 40.0;
+    const cornerLength = 40.0;
     final cornerPaint = Paint()
       ..color = Colors.greenAccent
       ..style = PaintingStyle.stroke

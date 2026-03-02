@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myperro_app_merged/core/ble/ble_controller.dart';
+import 'package:myperro/core/ble/ble_controller.dart';
 import 'gps_test_screen.dart';
 
 /// Geofence setup screen - Configures collar's WiFi geofence
@@ -319,10 +319,10 @@ class _GeofenceSetupScreenState extends ConsumerState<GeofenceSetupScreen> {
               color: Colors.grey.shade100,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Column(
+            child: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
+                Row(
                   children: [
                     Icon(Icons.lightbulb_outline),
                     SizedBox(width: 8),
@@ -335,8 +335,8 @@ class _GeofenceSetupScreenState extends ConsumerState<GeofenceSetupScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                const Text(
+                SizedBox(height: 12),
+                Text(
                   'The collar will measure your WiFi signal strength (RSSI) and set:'
                   '\n\n• OUT threshold: Triggers when pet leaves home'
                   '\n• IN threshold: Triggers when pet returns home'

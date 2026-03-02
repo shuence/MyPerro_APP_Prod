@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myperro_app_merged/core/router/app_router.dart';
 
 class FeaturesScreen extends StatefulWidget {
   static const routeName = '/features'; // used by router
@@ -46,7 +45,7 @@ class _FeaturesScreenState extends State<FeaturesScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         title: const Text('MyPerro Features'),
         centerTitle: true,

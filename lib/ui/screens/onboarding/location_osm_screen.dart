@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart' as gc;
 import 'package:geolocator/geolocator.dart';
-import 'package:latlong2/latlong.dart';
 import '../onboarding/onboarding_title_screen.dart';
 
 const _brandOrange = Color(0xFFF5832A);
@@ -19,14 +18,12 @@ class LocationOsmScreen extends StatefulWidget {
 }
 
 class _LocationOsmScreenState extends State<LocationOsmScreen> {
-  final MapController _mapController = MapController();
+  late GoogleMapController _mapController;
 
-  // State
-  LatLng? _center;              // camera center
-  String? _address;             // reverse-geocoded address
-  bool _gettingAddress = false; // loading flag
+  LatLng? _center;
+  String? _address;
+  bool _gettingAddress = false;
 
-  // Debounce reverse geocode
   Timer? _rgTimer;
 
   @override
@@ -41,7 +38,6 @@ class _LocationOsmScreenState extends State<LocationOsmScreen> {
     super.dispose();
   }
 
-  // ===== PERMISSION + CURRENT LOCATION =====
   Future<void> _initCurrentLocation() async {
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -74,10 +70,12 @@ class _LocationOsmScreenState extends State<LocationOsmScreen> {
       if (!mounted) return;
       setState(() => _center = initial);
 
-      // Move camera (applies once the map is ready too)
-      _mapController.move(initial, 16);
+      _mapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(target: initial, zoom: 16),
+        ),
+      );
 
-      // Reverse-geocode once initially
       _reverseGeocode(initial);
     } catch (e) {
       if (!mounted) return;
@@ -85,7 +83,6 @@ class _LocationOsmScreenState extends State<LocationOsmScreen> {
     }
   }
 
-  // ===== REVERSE GEOCODING =====
   Future<void> _reverseGeocode(LatLng point) async {
     setState(() {
       _gettingAddress = true;
@@ -115,21 +112,16 @@ class _LocationOsmScreenState extends State<LocationOsmScreen> {
     }
   }
 
-  // ===== MAP EVENT HANDLER (Flutter Map v7) =====
-  void _onMapEvent(MapEvent event) {
-    // Only react after move ends
-    if (event is! MapEventMoveEnd) return;
-
-    final c = event.camera.center;
+  void _onCameraMove(CameraPosition position) {
+    final c = position.target;
     _center = c;
 
-    // Debounce reverse geocode
     _rgTimer?.cancel();
     _rgTimer = Timer(const Duration(milliseconds: 350), () {
       _reverseGeocode(c);
     });
 
-    setState(() {}); // refresh indicators
+    setState(() {});
   }
 
   // ===== UI HELPERS =====
@@ -254,71 +246,28 @@ class _LocationOsmScreenState extends State<LocationOsmScreen> {
   }
 
   Widget _buildMap() {
-    final fallback = const LatLng(28.6139, 77.2090); // New Delhi
+    const fallback = LatLng(28.6139, 77.2090);
     final center = _center ?? fallback;
 
-    return FlutterMap(
-      mapController: _mapController,
-      options: MapOptions(
-        initialCenter: center,
-        initialZoom: 16,
-        interactionOptions: const InteractionOptions(
-          flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-        ),
-        onMapEvent: _onMapEvent,
+    return GoogleMap(
+      onMapCreated: (controller) {
+        _mapController = controller;
+      },
+      initialCameraPosition: CameraPosition(
+        target: center,
+        zoom: 16,
       ),
-      children: [
-        TileLayer(
-          urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          subdomains: const ['a', 'b', 'c'],
-          userAgentPackageName: 'com.myperro.myperro_app',
-          retinaMode: true,
+      onCameraMove: _onCameraMove,
+      markers: {
+        Marker(
+          markerId: const MarkerId('center'),
+          position: center,
+          infoWindow: const InfoWindow(title: 'Selected Location'),
         ),
-
-        // Center marker (dot + base)
-        MarkerLayer(
-          markers: [
-            Marker(
-              width: 40,
-              height: 40,
-              point: center,
-              alignment: Alignment.topCenter,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Dot
-                  Container(
-                    width: 14,
-                    height: 14,
-                    decoration: BoxDecoration(
-                      color: _brandOrange,
-                      borderRadius: BorderRadius.circular(7),
-                      border: Border.all(color: Colors.white, width: 2),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
-                          blurRadius: 6,
-                          offset: const Offset(0, 3),
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  // Base line
-                  Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
+      },
+      myLocationEnabled: true,
+      myLocationButtonEnabled: true,
+      zoomControlsEnabled: true,
     );
   }
 }
@@ -344,7 +293,7 @@ class _ContinueCTA extends StatelessWidget {
             colors: [Color(0xFFCFCFCF), Color(0xFFBDBDBD)],
           );
 
-    final bubble = Colors.white.withOpacity(enabled ? 0.28 : 0.35);
+    final bubble = Colors.white.withAlpha(enabled ? 0x44 : 0x59);
 
     return Stack(
       clipBehavior: Clip.none,

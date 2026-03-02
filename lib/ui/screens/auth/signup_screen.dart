@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myperro_app_merged/ui/screens/auth/signup_otp_screen.dart';
+import 'package:myperro/ui/screens/auth/signup_otp_screen.dart';
 import 'dart:ui' as ui;
 
 // Brand tokens (match login)

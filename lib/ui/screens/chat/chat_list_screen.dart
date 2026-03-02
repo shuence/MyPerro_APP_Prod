@@ -89,7 +89,7 @@ class _ChatListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = 16.0;
+    const radius = 16.0;
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(radius),

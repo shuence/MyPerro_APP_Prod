@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rive/rive.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:myperro_app_merged/core/auth/auth_locator.dart';
-import 'package:myperro_app_merged/ui/screens/auth/signup_screen.dart';
-import 'package:myperro_app_merged/ui/screens/onboarding/location_osm_screen.dart'; // <-- added
+import 'package:myperro/core/auth/auth_locator.dart';
+import 'package:myperro/ui/screens/auth/signup_screen.dart';
+import 'package:myperro/ui/screens/onboarding/location_osm_screen.dart'; // <-- added
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});

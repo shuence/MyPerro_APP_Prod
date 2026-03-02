@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myperro_app_merged/core/ble/ble_controller.dart';
+import 'package:myperro/core/ble/ble_controller.dart';
 import 'collar_registration_screen.dart';
 
 /// Collar pairing screen - Handles BLE connection and IMEI verification

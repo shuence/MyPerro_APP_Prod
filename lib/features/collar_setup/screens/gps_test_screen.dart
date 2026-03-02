@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:myperro_app_merged/core/ble/ble_controller.dart';
-import 'package:myperro_app_merged/core/models/location_data.dart';
+import 'package:myperro/core/ble/ble_controller.dart';
+import 'package:myperro/core/models/location_data.dart';
 import 'package:geolocator/geolocator.dart';
 import 'setup_complete_screen.dart';
 

@@ -343,7 +343,7 @@ class _UsersScreenState extends State<UsersScreen> {
                   Text(permission),
                 ],
               ),
-            ).toList(),
+            ),
           ],
         ),
         actions: [
