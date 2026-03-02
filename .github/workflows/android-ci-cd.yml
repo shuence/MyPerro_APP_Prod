@@ -217,63 +217,33 @@ jobs:
             exit 1
           fi
           
-          # Read current version code from local.properties - simpler approach
+          echo "Contents of local.properties:"
+          cat android/local.properties
+          
+          # Read current version code from local.properties
           CURRENT_VERSION_CODE=$(grep "flutter.versionCode" android/local.properties | cut -d'=' -f2 | tr -d ' ')
-          
-          echo "Current version code: $CURRENT_VERSION_CODE"
-          
-          # Read current version name from local.properties - simpler approach
           CURRENT_VERSION_NAME=$(grep "flutter.versionName" android/local.properties | cut -d'=' -f2 | tr -d ' ')
           
+          echo "Current version code: $CURRENT_VERSION_CODE"
           echo "Current version name: $CURRENT_VERSION_NAME"
           
           # Validate that we found the version information
           if [ -z "$CURRENT_VERSION_CODE" ] || [ -z "$CURRENT_VERSION_NAME" ]; then
             echo "❌ Error: Could not extract version information"
-            echo "Current version code: '$CURRENT_VERSION_CODE'"
-            echo "Current version name: '$CURRENT_VERSION_NAME'"
             exit 1
           fi
           
           # Increment version code
           NEW_VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
+          NEW_PATCH=$((${CURRENT_VERSION_NAME##*.} + 1))
+          NEW_VERSION_NAME="${CURRENT_VERSION_NAME%.*}.$NEW_PATCH"
+          
           echo "New version code: $NEW_VERSION_CODE"
-          
-          # Increment version name (e.g., 1.0.0 -> 1.0.1)
-          IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION_NAME"
-          if [ ${#VERSION_PARTS[@]} -ne 3 ]; then
-            echo "❌ Error: Version name format should be X.Y.Z, got: $CURRENT_VERSION_NAME"
-            exit 1
-          fi
-          
-          MAJOR=${VERSION_PARTS[0]}
-          MINOR=${VERSION_PARTS[1]}
-          PATCH=${VERSION_PARTS[2]}
-          
-          NEW_PATCH=$((PATCH + 1))
-          NEW_VERSION_NAME="$MAJOR.$MINOR.$NEW_PATCH"
           echo "New version name: $NEW_VERSION_NAME"
           
-          # Create backup of original file
-          cp android/local.properties android/local.properties.backup
-          
-          # Update local.properties with new version code and name
+          # Update local.properties
           sed -i.bak "s/flutter.versionCode=.*/flutter.versionCode=$NEW_VERSION_CODE/" android/local.properties
           sed -i.bak "s/flutter.versionName=.*/flutter.versionName=$NEW_VERSION_NAME/" android/local.properties
-          
-          # Verify the changes
-          echo "Updated version in local.properties:"
-          grep "flutter.versionCode\|flutter.versionName" android/local.properties
-          
-          # Double-check the changes were applied correctly
-          UPDATED_VERSION_CODE=$(grep "flutter.versionCode" android/local.properties | cut -d'=' -f2 | tr -d ' ')
-          UPDATED_VERSION_NAME=$(grep "flutter.versionName" android/local.properties | cut -d'=' -f2 | tr -d ' ')
-          
-          if [ "$UPDATED_VERSION_CODE" != "$NEW_VERSION_CODE" ] || [ "$UPDATED_VERSION_NAME" != "$NEW_VERSION_NAME" ]; then
-            echo "❌ Error: Version update failed. Restoring backup..."
-            cp android/local.properties.backup android/local.properties
-            exit 1
-          fi
           
           # Set outputs for later use
           echo "old_version_code=$CURRENT_VERSION_CODE" >> $GITHUB_OUTPUT
