@@ -83,11 +83,11 @@ jobs:
       - name: Create key.properties for CI
         run: |
           cat > android/key.properties << 'EOF'
-storeFile=app/myperro-key.jks
-storePassword=${{ secrets.KEYSTORE_PASSWORD }}
-keyAlias=myperro-key
-keyPassword=${{ secrets.KEY_PASSWORD }}
-EOF
+          storeFile=app/myperro-key.jks
+          storePassword=${{ secrets.KEYSTORE_PASSWORD }}
+          keyAlias=myperro-key
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          EOF
           echo "✅ Created key.properties"
           cat android/key.properties
 
