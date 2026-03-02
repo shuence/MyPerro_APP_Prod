@@ -22,6 +22,57 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # 🔐 Verify Required Secrets
+      - name: Verify Required Secrets
+        run: |
+          echo "Checking required secrets..."
+          MISSING_SECRETS=0
+          
+          if [ -z "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "❌ KEYSTORE_BASE64 is not set"
+            MISSING_SECRETS=$((MISSING_SECRETS + 1))
+          else
+            echo "✅ KEYSTORE_BASE64 is set"
+          fi
+          
+          if [ -z "${{ secrets.KEYSTORE_PASSWORD }}" ]; then
+            echo "❌ KEYSTORE_PASSWORD is not set"
+            MISSING_SECRETS=$((MISSING_SECRETS + 1))
+          else
+            echo "✅ KEYSTORE_PASSWORD is set"
+          fi
+          
+          if [ -z "${{ secrets.KEY_PASSWORD }}" ]; then
+            echo "❌ KEY_PASSWORD is not set"
+            MISSING_SECRETS=$((MISSING_SECRETS + 1))
+          else
+            echo "✅ KEY_PASSWORD is set"
+          fi
+          
+          if [ -z "${{ secrets.GOOGLE_SERVICES_JSON }}" ]; then
+            echo "❌ GOOGLE_SERVICES_JSON is not set"
+            MISSING_SECRETS=$((MISSING_SECRETS + 1))
+          else
+            echo "✅ GOOGLE_SERVICES_JSON is set"
+          fi
+          
+          if [ -z "${{ secrets.FIREBASE_OPTIONS_DART_BASE64 }}" ]; then
+            echo "❌ FIREBASE_OPTIONS_DART_BASE64 is not set"
+            MISSING_SECRETS=$((MISSING_SECRETS + 1))
+          else
+            echo "✅ FIREBASE_OPTIONS_DART_BASE64 is set"
+          fi
+          
+          if [ $MISSING_SECRETS -gt 0 ]; then
+            echo ""
+            echo "❌ $MISSING_SECRETS required secret(s) are missing!"
+            echo "Please add them to GitHub repository settings under Secrets and variables > Actions"
+            exit 1
+          fi
+          
+          echo ""
+          echo "✅ All required secrets are set"
+
       # 🔧 Verify and repair Gradle wrapper
       - name: Verify and Repair Gradle Wrapper
         run: |
