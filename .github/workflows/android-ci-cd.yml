@@ -205,6 +205,18 @@ jobs:
       - name: Increment Version Code and Name
         id: version_code
         run: |
+          # Debug: Check if file exists and show contents
+          echo "Checking for local.properties..."
+          if [ -f android/local.properties ]; then
+            echo "✅ File exists"
+            echo "Contents:"
+            cat android/local.properties
+          else
+            echo "❌ File does not exist"
+            ls -la android/
+            exit 1
+          fi
+          
           # Read current version code from local.properties - simpler approach
           CURRENT_VERSION_CODE=$(grep "flutter.versionCode" android/local.properties | cut -d'=' -f2 | tr -d ' ')
           
