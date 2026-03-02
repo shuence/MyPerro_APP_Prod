@@ -32,7 +32,10 @@ jobs:
 
       # ⚙️ Gradle permissions
       - name: Grant execute permission for gradlew
-        run: chmod +x android/gradlew
+        run: |
+          ls -la android/gradlew
+          chmod +x android/gradlew
+          ls -la android/gradlew
 
       # ⚡ Setup Gradle (optimizes build, configures cache)
       - name: Setup Gradle
@@ -325,6 +328,10 @@ jobs:
       - name: Build Signed APKs & AAB
         run: |
           cd android
+          echo "Current directory: $(pwd)"
+          echo "Checking gradlew..."
+          ls -la gradlew
+          echo "Starting build..."
           ./gradlew assembleRelease bundleRelease \
             --parallel \
             --max-workers=6 \
@@ -333,6 +340,7 @@ jobs:
             --configuration-cache \
             --configuration-cache-problems=warn \
             --no-scan
+          echo "✅ Build completed successfully"
 
       # 🔍 Find build outputs
       - name: Find APK & AAB
