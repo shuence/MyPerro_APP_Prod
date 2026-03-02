@@ -229,10 +229,10 @@ jobs:
           # Create local.properties if it doesn't exist
           if [ ! -f android/local.properties ]; then
             echo "Creating android/local.properties..."
-            cat > android/local.properties << EOF
-            flutter.versionName=1.0.0
-            flutter.versionCode=1
-            EOF
+            cat > android/local.properties << 'EOF'
+flutter.versionName=1.0.0
+flutter.versionCode=1
+EOF
           fi
           
           echo "Contents of local.properties:"
