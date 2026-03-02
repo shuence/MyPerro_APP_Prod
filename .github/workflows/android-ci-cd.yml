@@ -32,7 +32,7 @@ jobs:
 
       # ⚙️ Gradle permissions
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        run: chmod +x android/gradlew
 
       # ⚡ Setup Gradle (optimizes build, configures cache)
       - name: Setup Gradle
@@ -324,6 +324,7 @@ jobs:
       # 🏗️ Build All Variants (optimized)
       - name: Build Signed APKs & AAB
         run: |
+          cd android
           ./gradlew assembleRelease bundleRelease \
             --parallel \
             --max-workers=6 \
