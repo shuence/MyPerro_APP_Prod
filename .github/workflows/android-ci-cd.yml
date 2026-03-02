@@ -99,6 +99,20 @@ jobs:
           echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 --decode > android/app/google-services.json
           echo "✅ Decoded google-services.json"
           ls -lah android/app/google-services.json
+          
+          # Validate JSON
+          if ! command -v jq &> /dev/null; then
+            echo "⚠️ jq not found, skipping JSON validation"
+          else
+            if jq empty android/app/google-services.json 2>/dev/null; then
+              echo "✅ JSON is valid"
+            else
+              echo "❌ JSON is malformed!"
+              echo "File contents:"
+              cat android/app/google-services.json
+              exit 1
+            fi
+          fi
 
       # 🔥 Decode firebase_options.dart (Firebase Dart Configuration)
       - name: Decode firebase_options.dart
